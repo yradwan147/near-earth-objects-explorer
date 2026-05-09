@@ -288,7 +288,7 @@ class NEOShell(cmd.Cmd):
         # Use the ArgumentParser to parse the shell arguments.
         try:
             return parser.parse_args(args)
-        except SystemExit as err:
+        except SystemExit:
             # The `parse_args` method doesn't actually surface `ArgumentError`s
             # nor `ArgumentTypeError`s - instead, it calls its own `error`
             # method which prints the error message and then calls `sys.exit`.

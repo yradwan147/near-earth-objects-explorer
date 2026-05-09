@@ -11,6 +11,16 @@ CSV_FIELDS = (
 
 
 def write_to_csv(results, filename):
+    """Write a stream of CloseApproach objects to a CSV file.
+
+    Args:
+        results: iterable of CloseApproach objects. Each object's NEO
+            back-reference is serialised alongside the approach fields.
+        filename: path of the CSV file to write. Existing files are
+            overwritten. The header row is the canonical ``CSV_FIELDS``
+            tuple, and ``diameter_km`` is emitted as the literal
+            ``'nan'`` when the NEO's diameter is unknown.
+    """
     with open(filename, 'w', encoding='utf-8', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=CSV_FIELDS)
         writer.writeheader()
@@ -36,6 +46,15 @@ def write_to_csv(results, filename):
 
 
 def write_to_json(results, filename):
+    """Write a stream of CloseApproach objects to a JSON file.
+
+    Args:
+        results: iterable of CloseApproach objects. Each object's NEO
+            back-reference is nested under a ``'neo'`` key.
+        filename: path of the JSON file to write. Existing files are
+            overwritten. Floating-point ``NaN`` values are serialised
+            as JSON ``null`` (since JSON has no NaN literal).
+    """
     payload = []
     for ca in results:
         d = ca.serialize()

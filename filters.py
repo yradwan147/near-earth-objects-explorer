@@ -11,49 +11,69 @@ import itertools
 
 class AttributeFilter:
     """Generic attribute-vs-reference filter (e.g. `time >= 2020-01-01`)."""
+
     def __init__(self, op, value):
+        """Store the comparison operator + the reference value."""
         self.op = op
         self.value = value
 
     def __call__(self, approach):
+        """Return True iff the approach's attribute satisfies op(value)."""
         return self.op(self.get(approach), self.value)
 
     @classmethod
     def get(cls, approach):
+        """Pull the relevant attribute from a CloseApproach (override me)."""
         raise NotImplementedError
 
     def __repr__(self):
+        """Computer-readable repr."""
         return (f"{type(self).__name__}(op=operator.{self.op.__name__}, "
                 f"value={self.value})")
 
 
 class DateFilter(AttributeFilter):
+    """Filter close approaches by their `date()` of approach."""
+
     @classmethod
     def get(cls, approach):
+        """Return the date of the approach (None if it has no time)."""
         return approach.time.date() if approach.time else None
 
 
 class DistanceFilter(AttributeFilter):
+    """Filter close approaches by their nominal approach distance (au)."""
+
     @classmethod
     def get(cls, approach):
+        """Return the approach distance in astronomical units."""
         return approach.distance
 
 
 class VelocityFilter(AttributeFilter):
+    """Filter close approaches by their relative velocity (km/s)."""
+
     @classmethod
     def get(cls, approach):
+        """Return the approach relative velocity in km/s."""
         return approach.velocity
 
 
 class DiameterFilter(AttributeFilter):
+    """Filter close approaches by the parent NEO's diameter (km)."""
+
     @classmethod
     def get(cls, approach):
+        """Return the parent NEO's diameter in km, or NaN if missing."""
         return approach.neo.diameter if approach.neo else float('nan')
 
 
 class HazardousFilter(AttributeFilter):
+    """Filter close approaches by the parent NEO's hazardous flag."""
+
     @classmethod
     def get(cls, approach):
+        """Return the parent NEO's hazardous flag (False if missing)."""
         return approach.neo.hazardous if approach.neo else False
 
 
