@@ -6,7 +6,26 @@ and links each close approach to the NEO it belongs to.
 
 
 class NEODatabase:
+    """In-memory database wrapping a collection of NEOs and CloseApproaches.
+
+    On construction the database builds two lookup tables for the NEOs
+    (by designation, by name) and walks every close approach to attach
+    it to its parent NEO. Approaches whose designation does not match
+    any known NEO are dropped.
+    """
+
     def __init__(self, neos, approaches):
+        """Construct the database from iterables of NEOs and approaches.
+
+        Args:
+            neos: iterable of :class:`NearEarthObject`. The full
+                collection is stored verbatim and indexed by
+                designation (always) and by name (if the NEO has one).
+            approaches: iterable of :class:`CloseApproach`. Each is
+                attached to its parent NEO via the NEO's primary
+                designation; approaches whose designation does not
+                match any NEO are dropped from the database.
+        """
         self._neos = list(neos)
         self._approaches = list(approaches)
 
@@ -30,9 +49,31 @@ class NEODatabase:
         self._approaches = kept
 
     def get_neo_by_designation(self, designation):
+        """Return the NEO with the given primary ``designation``, or ``None``.
+
+        Args:
+            designation: the NEO's primary designation as a string (or
+                anything ``str()`` can coerce; the lookup is by string
+                key).
+
+        Returns:
+            The matching :class:`NearEarthObject` or ``None`` if no NEO
+            in the database has that designation.
+        """
         return self._by_designation.get(str(designation))
 
     def get_neo_by_name(self, name):
+        """Return the NEO with the given IAU ``name``, or ``None``.
+
+        Args:
+            name: the NEO's IAU name (e.g. ``'Eros'``). The lookup is
+                exact-match; ``None`` and the empty string never
+                resolve to a NEO.
+
+        Returns:
+            The matching :class:`NearEarthObject` or ``None`` if no NEO
+            in the database has that name.
+        """
         return self._by_name.get(name)
 
     def query(self, filters=()):

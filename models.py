@@ -54,7 +54,9 @@ class NearEarthObject:
     @property
     def fullname(self):
         """Return ``'designation (name)'`` or just ``designation``."""
-        return f"{self.designation} ({self.name})" if self.name else self.designation
+        if self.name:
+            return f"{self.designation} ({self.name})"
+        return self.designation
 
     def __str__(self):
         """Human-readable one-line summary used by ``main.py``."""

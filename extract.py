@@ -6,7 +6,7 @@ from models import NearEarthObject, CloseApproach
 
 
 def load_neos(neo_csv_path):
-    """Read every row of `neo_csv_path` and return a list of `NearEarthObject`."""
+    """Read `neo_csv_path` and return a list of `NearEarthObject`."""
     neos = []
     with open(neo_csv_path, 'r', encoding='utf-8', newline='') as f:
         for row in csv.DictReader(f):
